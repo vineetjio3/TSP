@@ -1,0 +1,99 @@
+##########kc-std######################
+version: '2.4'
+services:
+ keycloak:
+    image: "quay.io/keycloak/keycloak:21.1"
+    command:
+      - "start-dev"
+    environment:
+      - name: "KEYCLOAK_ADMIN"
+        value: "admin"
+      - name: "KEYCLOAK_ADMIN_PASSWORD"
+        value: "Pa55w0rd"
+    ports:
+    - "8080:8080"
+
+
+#############kc-auth-postgres############
+
+#version: "2.4"
+#services:
+  kc-auth-postgres:
+    image: postgres
+    environment:
+      - name: POSTGRES_USER
+        value: keycloak
+      - name: POSTGRES_PASSWORD
+        value: password
+      - name: POSTGRES_DB
+        value: keycloak
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+##############kc-auth-server################
+
+#version: "2.4"
+#services:
+  kc-auth:
+    image: quay.io/keycloak/keycloak:21.1
+    command:
+      - start
+    environment:
+      - name: KC_DB_POOL_MIN_SIZE
+        value: "10"
+      - name: KEYCLOAK_ADMIN_PASSWORD
+        value: Pa55w0rd
+      - name: KC_DB_PASSWORD
+        value: password
+      - name: KC_DB_POOL_INITIAL_SIZE
+        value: "10"
+      - name: KC_DB_USERNAME
+        value: keycloak
+      - name: KEYCLOAK_ADMIN
+        value: admin
+      - name: KC_DB
+        value: postgres
+      - name: KC_DB_URL
+        value: jdbc:postgresql://postgres-awsvpc-nlb-3710ce4b0b64716e.elb.ap-south-1.amazonaws.com:5432/keycloak
+      - name: KC_HTTP_ENABLED
+        value: "true"
+      - name: KC_DB_SCHEMA
+        value: public
+      - name: KC_HOSTNAME_STRICT
+        value: "false"
+      - name: KC_HOSTNAME_STRICT_HTTPS
+        value: "false"
+    ports:
+      - 8080:8080
+
+##############tsp-auth-server#######################
+
+#version: "2.4"
+#services:
+  tsp-auth-server:
+    image: 837024961538.dkr.ecr.ap-south-1.amazonaws.com/tsp-fiu-auth-server:26-07-23
+    ports:
+      - 3004:3004
+
+
+###############mw-db-postgres"######################
+#version: "2.4"
+#services:
+  mw-db-postgres":
+    image: postgres
+    ports:
+      - 5432:5432
+volumes:
+  - postgres_data:/var/lib/postgresql/data
+
+
+#################middleware#######################
+
+#version: "2.4"
+#services:
+  middleware":
+    image: 837024961538.dkr.ecr.ap-south-1.amazonaws.com/tsp-fiu-server:26-07-23-02
+    ports:
+      - 3003:3003
